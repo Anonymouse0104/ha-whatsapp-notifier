@@ -1,0 +1,14 @@
+{
+  "config": {
+    "step": {"user": {"title": "WhatsApp-bridge", "data": {"host": "Bridge-host", "port": "Poort", "token": "API-token", "default_chat_id": "Standaard chat-ID"}}},
+    "error": {"cannot_connect": "Kan de bridge niet bereiken", "invalid_auth": "Ongeldig API-token"},
+    "abort": {"already_configured": "Al geconfigureerd"}
+  },
+  "options": {"step": {"init": {"title": "Opties", "data": {"default_chat_id": "Standaard chat-ID"}}}},
+  "entity": {
+    "notify": {"notify": {"name": "Bericht"}},
+    "sensor": {"status": {"name": "Status", "state": {"connected": "Verbonden", "connecting": "Verbinden", "pairing_required": "Koppelen vereist", "logged_out": "Uitgelogd", "error": "Fout", "bridge_unreachable": "Bridge onbereikbaar"}}},
+    "button": {"test_message": {"name": "Testbericht versturen"}}
+  },
+  "services": {"send_message": {"name": "Bericht versturen", "description": "Stuur een WhatsApp-bericht; chat_id vervangt de standaardchat.", "fields": {"message": {"name": "Bericht", "description": "Te versturen tekst"}, "chat_id": {"name": "Chat-ID", "description": "Telefoonnummer of groeps-ID (standaardchat indien leeg)"}}}}
+}

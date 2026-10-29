@@ -1,0 +1,17 @@
+name: WhatsApp Bridge
+version: "0.1.0"
+slug: whatsapp_bridge
+description: Self-hosted WhatsApp bridge (linked device) for the WhatsApp Notifier integration
+arch: [amd64, aarch64, armv7]
+init: false
+startup: services
+ports:
+  8099/tcp: 8099
+ports_description:
+  8099/tcp: Bridge API (used by the integration)
+options:
+  api_token: ""
+  pairing_phone: ""
+schema:
+  api_token: password
+  pairing_phone: str?

@@ -1,0 +1,14 @@
+{
+  "config": {
+    "step": {"user": {"title": "WhatsApp bridge", "data": {"host": "Bridge host", "port": "Port", "token": "API token", "default_chat_id": "Default chat ID"}}},
+    "error": {"cannot_connect": "Cannot reach the bridge", "invalid_auth": "Invalid API token"},
+    "abort": {"already_configured": "Already configured"}
+  },
+  "options": {"step": {"init": {"title": "Options", "data": {"default_chat_id": "Default chat ID"}}}},
+  "entity": {
+    "notify": {"notify": {"name": "Message"}},
+    "sensor": {"status": {"name": "Status", "state": {"connected": "Connected", "connecting": "Connecting", "pairing_required": "Pairing required", "logged_out": "Logged out", "error": "Error", "bridge_unreachable": "Bridge unreachable"}}},
+    "button": {"test_message": {"name": "Send test message"}}
+  },
+  "services": {"send_message": {"name": "Send message", "description": "Send a WhatsApp message; chat_id overrides the default chat.", "fields": {"message": {"name": "Message", "description": "Text to send"}, "chat_id": {"name": "Chat ID", "description": "Phone number or group ID (default chat if empty)"}}}}
+}

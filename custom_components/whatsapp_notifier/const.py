@@ -1,0 +1,5 @@
+DOMAIN = "whatsapp_notifier"
+CONF_TOKEN = "token"
+CONF_DEFAULT_CHAT = "default_chat_id"
+EVENT_MESSAGE = f"{DOMAIN}_message_received"
+SIGNAL_STATUS = f"{DOMAIN}_status"

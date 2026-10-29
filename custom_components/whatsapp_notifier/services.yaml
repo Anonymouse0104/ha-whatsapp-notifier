@@ -1,0 +1,11 @@
+send_message:
+  fields:
+    message:
+      required: true
+      example: "Hello"
+      selector:
+        text:
+    chat_id:
+      example: "31612345678 or 120363012345@g.us"
+      selector:
+        text:
