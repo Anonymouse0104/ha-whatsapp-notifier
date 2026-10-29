@@ -24,11 +24,7 @@
       "init": {
         "title": "Options",
         "data": {
-          "default_chat_id": "Default chat ID",
-          "forward_chats": "Chats to receive messages from"
-        },
-        "data_description": {
-          "forward_chats": "Chat IDs (person number or group ID). Incoming messages from these chats fire the whatsapp_notifier_message_received event."
+          "default_chat_id": "Default chat ID"
         }
       }
     }
@@ -74,6 +70,47 @@
           "name": "Chat ID",
           "description": "Phone number or group ID (default chat if empty)"
         }
+      }
+    }
+  },
+  "config_subentries": {
+    "chat": {
+      "entry_type": "Chat",
+      "initiate_flow": {
+        "user": "Add chat"
+      },
+      "step": {
+        "user": {
+          "title": "Add chat",
+          "data": {
+            "name": "Name",
+            "chat_id": "Chat ID",
+            "only_replies": "Only replies to messages sent by this bridge"
+          },
+          "data_description": {
+            "chat_id": "Phone number with country code (31612345678) or group ID (...@g.us)",
+            "only_replies": "The Last message sensor only updates when someone uses WhatsApp reply on a message the bridge sent"
+          }
+        },
+        "reconfigure": {
+          "title": "Edit chat",
+          "data": {
+            "name": "Name",
+            "chat_id": "Chat ID",
+            "only_replies": "Only replies to messages sent by this bridge"
+          },
+          "data_description": {
+            "chat_id": "Phone number with country code (31612345678) or group ID (...@g.us)",
+            "only_replies": "The Last message sensor only updates when someone uses WhatsApp reply on a message the bridge sent"
+          }
+        }
+      },
+      "error": {
+        "invalid_chat_id": "Invalid chat ID"
+      },
+      "abort": {
+        "already_configured": "This chat is already added",
+        "reconfigure_successful": "Saved"
       }
     }
   }

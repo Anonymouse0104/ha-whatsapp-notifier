@@ -24,11 +24,7 @@
       "init": {
         "title": "Opties",
         "data": {
-          "default_chat_id": "Standaard chat-ID",
-          "forward_chats": "Chats waarvan berichten ontvangen worden"
-        },
-        "data_description": {
-          "forward_chats": "Chat-ID's (nummer of groeps-ID). Berichten uit deze chats starten het event whatsapp_notifier_message_received."
+          "default_chat_id": "Standaard chat-ID"
         }
       }
     }
@@ -74,6 +70,47 @@
           "name": "Chat-ID",
           "description": "Telefoonnummer of groeps-ID (standaardchat indien leeg)"
         }
+      }
+    }
+  },
+  "config_subentries": {
+    "chat": {
+      "entry_type": "Chat",
+      "initiate_flow": {
+        "user": "Chat toevoegen"
+      },
+      "step": {
+        "user": {
+          "title": "Chat toevoegen",
+          "data": {
+            "name": "Naam",
+            "chat_id": "Chat-ID",
+            "only_replies": "Alleen antwoorden op berichten van deze bridge"
+          },
+          "data_description": {
+            "chat_id": "Telefoonnummer met landcode (31612345678) of groeps-ID (...@g.us)",
+            "only_replies": "De sensor Laatste bericht wordt alleen bijgewerkt als iemand in WhatsApp beantwoorden gebruikt op een bericht dat de bridge stuurde"
+          }
+        },
+        "reconfigure": {
+          "title": "Chat wijzigen",
+          "data": {
+            "name": "Naam",
+            "chat_id": "Chat-ID",
+            "only_replies": "Alleen antwoorden op berichten van deze bridge"
+          },
+          "data_description": {
+            "chat_id": "Telefoonnummer met landcode (31612345678) of groeps-ID (...@g.us)",
+            "only_replies": "De sensor Laatste bericht wordt alleen bijgewerkt als iemand in WhatsApp beantwoorden gebruikt op een bericht dat de bridge stuurde"
+          }
+        }
+      },
+      "error": {
+        "invalid_chat_id": "Ongeldig chat-ID"
+      },
+      "abort": {
+        "already_configured": "Deze chat is al toegevoegd",
+        "reconfigure_successful": "Opgeslagen"
       }
     }
   }

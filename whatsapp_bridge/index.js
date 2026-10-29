@@ -6,6 +6,7 @@ import QRCode from "qrcode";
 import makeWASocket, {
   DisconnectReason,
   fetchLatestBaileysVersion,
+  jidNormalizedUser,
   useMultiFileAuthState,
 } from "@whiskeysockets/baileys";
 
@@ -61,6 +62,11 @@ function toJid(chatId) {
   if (!digits) throw new Error("invalid chat_id");
   return `${digits}@s.whatsapp.net`;
 }
+
+const fromMe = (jid) => {
+  const mine = [sock?.user?.id, sock?.user?.lid].filter(Boolean).map(jidNormalizedUser);
+  return !!jid && mine.includes(jidNormalizedUser(jid));
+};
 
 async function start() {
   const { state: auth, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
@@ -124,6 +130,9 @@ async function start() {
         from_me: !!m.key.fromMe,
         text,
         quoted_message_id: ctx?.stanzaId ?? null,
+        quoted_text: ctx?.quotedMessage?.conversation ?? ctx?.quotedMessage?.extendedTextMessage?.text ?? null,
+        // true when the replied-to message was sent by this linked account (what the bridge sent)
+        quoted_from_me: !!ctx?.stanzaId && (sentIds.has(ctx.stanzaId) || fromMe(ctx.participant)),
       });
     }
   });

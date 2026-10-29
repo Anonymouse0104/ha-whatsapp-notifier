@@ -2,13 +2,19 @@ from __future__ import annotations
 
 import voluptuous as vol
 from aiohttp import ClientTimeout
-from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
-from homeassistant.const import CONF_HOST, CONF_PORT
+from homeassistant.config_entries import (
+    ConfigEntry,
+    ConfigFlow,
+    ConfigSubentryFlow,
+    OptionsFlow,
+    SubentryFlowResult,
+)
+from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PORT
+from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from homeassistant.helpers.selector import TextSelector, TextSelectorConfig
-
-from .const import CONF_DEFAULT_CHAT, CONF_FORWARD_CHATS, CONF_TOKEN, DOMAIN
+from .chat_id import normalize
+from .const import CONF_CHAT_ID, CONF_DEFAULT_CHAT, CONF_ONLY_REPLIES, CONF_TOKEN, DOMAIN, SUBENTRY_CHAT
 
 
 class WhatsAppConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -17,6 +23,11 @@ class WhatsAppConfigFlow(ConfigFlow, domain=DOMAIN):
     @staticmethod
     def async_get_options_flow(entry: ConfigEntry) -> OptionsFlow:
         return WhatsAppOptionsFlow()
+
+    @classmethod
+    @callback
+    def async_get_supported_subentry_types(cls, config_entry: ConfigEntry) -> dict[str, type[ConfigSubentryFlow]]:
+        return {SUBENTRY_CHAT: ChatSubentryFlow}
 
     async def async_step_user(self, user_input=None):
         errors = {}
@@ -56,13 +67,64 @@ class WhatsAppOptionsFlow(OptionsFlow):
     async def async_step_init(self, user_input=None):
         if user_input is not None:
             return self.async_create_entry(data=user_input)
-        o = self.config_entry.options
-        schema = vol.Schema(
-            {
-                vol.Optional(CONF_DEFAULT_CHAT, default=o.get(CONF_DEFAULT_CHAT, "")): str,
-                vol.Optional(CONF_FORWARD_CHATS, default=o.get(CONF_FORWARD_CHATS, [])): TextSelector(
-                    TextSelectorConfig(multiple=True)
-                ),
-            }
+        current = self.config_entry.options.get(CONF_DEFAULT_CHAT, "")
+        return self.async_show_form(
+            step_id="init", data_schema=vol.Schema({vol.Optional(CONF_DEFAULT_CHAT, default=current): str})
         )
-        return self.async_show_form(step_id="init", data_schema=schema)
+
+
+def _chat_schema(name="", chat_id="", only_replies=False) -> vol.Schema:
+    return vol.Schema(
+        {
+            vol.Required(CONF_NAME, default=name): str,
+            vol.Required(CONF_CHAT_ID, default=chat_id): str,
+            vol.Required(CONF_ONLY_REPLIES, default=only_replies): bool,
+        }
+    )
+
+
+class ChatSubentryFlow(ConfigSubentryFlow):
+    """One chat (person or group): its own device with a notify entity and a last-message sensor."""
+
+    @staticmethod
+    def _chat(user_input: dict) -> tuple[str | None, dict[str, str]]:
+        try:
+            return normalize(user_input[CONF_CHAT_ID]), {}
+        except ValueError:
+            return None, {CONF_CHAT_ID: "invalid_chat_id"}
+
+    async def async_step_user(self, user_input=None) -> SubentryFlowResult:
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            chat, errors = self._chat(user_input)
+            if chat and any(s.unique_id == chat for s in self._get_entry().subentries.values()):
+                return self.async_abort(reason="already_configured")
+            if chat:
+                return self.async_create_entry(
+                    title=user_input[CONF_NAME],
+                    data={CONF_CHAT_ID: user_input[CONF_CHAT_ID], CONF_ONLY_REPLIES: user_input[CONF_ONLY_REPLIES]},
+                    unique_id=chat,
+                )
+        return self.async_show_form(
+            step_id="user",
+            data_schema=self.add_suggested_values_to_schema(_chat_schema(), user_input),
+            errors=errors,
+        )
+
+    async def async_step_reconfigure(self, user_input=None) -> SubentryFlowResult:
+        sub = self._get_reconfigure_subentry()
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            chat, errors = self._chat(user_input)
+            if chat:
+                return self.async_update_and_abort(
+                    self._get_entry(),
+                    sub,
+                    title=user_input[CONF_NAME],
+                    data_updates={CONF_CHAT_ID: user_input[CONF_CHAT_ID], CONF_ONLY_REPLIES: user_input[CONF_ONLY_REPLIES]},
+                )
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=_chat_schema(sub.title, sub.data[CONF_CHAT_ID], sub.data.get(CONF_ONLY_REPLIES, False)),
+            errors=errors,
+        )

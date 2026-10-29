@@ -23,7 +23,6 @@ class Bridge:
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
         self.status = "bridge_unreachable"
         self.attrs: dict = {}
-        self.last_message: dict | None = None
         self.default_chat = lambda: ""
         self.forward_chats = lambda: []
         self._task: asyncio.Task | None = None
@@ -70,9 +69,8 @@ class Bridge:
                         if data.pop("type", None) == "status":
                             self._set(data.pop("status"), data)
                         else:
-                            self.last_message = data
                             self.hass.bus.async_fire(EVENT_MESSAGE, data)
-                            async_dispatcher_send(self.hass, SIGNAL_MESSAGE)
+                            async_dispatcher_send(self.hass, SIGNAL_MESSAGE, data)
             except asyncio.CancelledError:
                 raise
             except Exception as err:  # noqa: BLE001 - any failure means: retry and show unreachable

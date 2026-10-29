@@ -1,5 +1,5 @@
 name: WhatsApp Bridge
-version: "0.1.7"
+version: "0.2.0"
 slug: whatsapp_bridge
 description: Self-hosted WhatsApp bridge (linked device) for the WhatsApp Notifier integration
 arch: [amd64, aarch64, armv7]

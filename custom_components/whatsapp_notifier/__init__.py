@@ -9,7 +9,7 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .bridge import Bridge
-from .const import CONF_DEFAULT_CHAT, CONF_FORWARD_CHATS, CONF_TOKEN, DOMAIN
+from .const import CONF_CHAT_ID, CONF_DEFAULT_CHAT, CONF_TOKEN, DOMAIN
 
 PLATFORMS = [Platform.NOTIFY, Platform.SENSOR, Platform.BUTTON]
 
@@ -20,7 +20,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     d = entry.data
     bridge = Bridge(hass, async_get_clientsession(hass), d[CONF_HOST], d[CONF_PORT], d.get(CONF_TOKEN, ""))
     bridge.default_chat = lambda: entry.options.get(CONF_DEFAULT_CHAT, "")
-    bridge.forward_chats = lambda: entry.options.get(CONF_FORWARD_CHATS, [])
+    bridge.forward_chats = lambda: [sub.data[CONF_CHAT_ID] for sub in entry.subentries.values()]
     bridge.start()
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = bridge
 
