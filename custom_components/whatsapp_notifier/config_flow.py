@@ -120,6 +120,7 @@ class ChatSubentryFlow(ConfigSubentryFlow):
                 return self.async_update_and_abort(
                     self._get_entry(),
                     sub,
+                    unique_id=chat,
                     title=user_input[CONF_NAME],
                     data_updates={CONF_CHAT_ID: user_input[CONF_CHAT_ID], CONF_ONLY_REPLIES: user_input[CONF_ONLY_REPLIES]},
                 )

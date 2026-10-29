@@ -2,7 +2,7 @@ from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 
-from .chat_id import normalize
+from .chat_id import accepts, normalize
 from .const import CONF_CHAT_ID, CONF_ONLY_REPLIES, DOMAIN, SIGNAL_MESSAGE, SIGNAL_STATUS
 from .entity import Base
 
@@ -57,7 +57,7 @@ class ChatSensor(Base, SensorEntity):
 
     @callback
     def _on_message(self, m: dict) -> None:
-        if normalize(m["chat_id"]) != self._chat or (self._only_replies and not m.get("quoted_from_me")):
+        if not accepts(self._chat, self._only_replies, m):
             return
         self._last = m
         self.async_write_ha_state()

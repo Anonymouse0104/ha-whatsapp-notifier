@@ -214,6 +214,7 @@ Messages you type on your own phone arrive on the linked device too (`from_me: t
 ## Security
 
 - Only one bridge per Home Assistant is supported; `whatsapp_notifier.send_message` uses the first configured one.
+- The bridge sends at most 20 messages per minute (it answers with an error above that), to protect your number from a runaway automation.
 - Anyone with the `api_token` can send messages as your account. Keep port 8099 inside your network and never forward it to the internet.
 
 ## Status

@@ -6,9 +6,9 @@ import QRCode from "qrcode";
 import makeWASocket, {
   DisconnectReason,
   fetchLatestBaileysVersion,
-  jidNormalizedUser,
   useMultiFileAuthState,
 } from "@whiskeysockets/baileys";
+import { makeLimiter, quotedFromMe, shouldForward, toJid } from "./logic.js";
 
 const opts = (() => {
   try {
@@ -20,7 +20,7 @@ const opts = (() => {
 const PORT = Number(opts.port ?? process.env.PORT ?? 8099);
 const TOKEN = opts.api_token ?? process.env.API_TOKEN ?? "";
 const PAIR_PHONE = String(opts.pairing_phone ?? process.env.PAIRING_PHONE ?? "").replace(/\D/g, "");
-const AUTH_DIR =process.env.AUTH_DIR ?? (fs.existsSync("/data") ? "/data/auth" : "./auth");
+const AUTH_DIR = process.env.AUTH_DIR ?? (fs.existsSync("/data") ? "/data/auth" : "./auth");
 
 if (!TOKEN) {
   console.error("api_token is required: anyone on the network could send messages without it");
@@ -55,18 +55,7 @@ const setStatus = (status, extra = {}) => {
   say("status", status);
 };
 
-function toJid(chatId) {
-  const id = String(chatId).trim().replace(/@c\.us$/, "@s.whatsapp.net"); // Green-API format
-  if (id.includes("@")) return id;
-  const digits = id.replace(/\D/g, "");
-  if (!digits) throw new Error("invalid chat_id");
-  return `${digits}@s.whatsapp.net`;
-}
-
-const fromMe = (jid) => {
-  const mine = [sock?.user?.id, sock?.user?.lid].filter(Boolean).map(jidNormalizedUser);
-  return !!jid && mine.includes(jidNormalizedUser(jid));
-};
+const allowSend = makeLimiter(20, 60_000); // max 20 messages per minute
 
 async function start() {
   const { state: auth, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
@@ -116,9 +105,8 @@ async function start() {
       if (!text) continue;
       const ctx = msg.extendedTextMessage?.contextInfo;
       const ids = [m.key.remoteJid, m.key.remoteJidAlt].filter(Boolean);
-      const ok = FORWARD.some((c) => ids.includes(toJid(c))); // privacy: only listed chats reach HA
-      say(ok ? "forwarding message from" : "ignoring message from unlisted chat", ids.join(" / "), m.key.fromMe ? "(from me)" : "");
-      if (!ok) continue;
+      if (!shouldForward(FORWARD, ids)) continue;
+      say("forwarding message from", ids.join(" / "), m.key.fromMe ? "(from me)" : "");
       const isGroup = m.key.remoteJid.endsWith("@g.us");
       broadcast({
         type: "message",
@@ -131,8 +119,13 @@ async function start() {
         text,
         quoted_message_id: ctx?.stanzaId ?? null,
         quoted_text: ctx?.quotedMessage?.conversation ?? ctx?.quotedMessage?.extendedTextMessage?.text ?? null,
-        // true when the replied-to message was sent by this linked account (what the bridge sent)
-        quoted_from_me: !!ctx?.stanzaId && (sentIds.has(ctx.stanzaId) || fromMe(ctx.participant)),
+        quoted_from_me: quotedFromMe({
+          ctx,
+          sentIds,
+          isGroup,
+          fromMe: !!m.key.fromMe,
+          mine: [sock.user?.id, sock.user?.lid].filter(Boolean),
+        }),
       });
     }
   });
@@ -182,6 +175,7 @@ const server = http.createServer(async (req, res) => {
       for await (const c of req) raw += c;
       const { chat_id, message } = JSON.parse(raw || "{}");
       if (!chat_id || !message) return json(res, 400, { error: "chat_id and message required" });
+      if (!allowSend()) return json(res, 429, { error: "too many messages (max 20 per minute)" });
       const sent = await sock.sendMessage(toJid(chat_id), { text: String(message) });
       sentIds.add(sent.key.id);
       if (sentIds.size > 500) sentIds.delete(sentIds.values().next().value);

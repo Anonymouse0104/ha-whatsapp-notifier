@@ -13,6 +13,11 @@ def normalize(chat_id: str) -> str:
     return f"{digits}@s.whatsapp.net"
 
 
+def accepts(chat: str, only_replies: bool, m: dict) -> bool:
+    """Should a chat's Last message sensor take this incoming message?"""
+    return normalize(m["chat_id"]) == chat and (not only_replies or bool(m.get("quoted_from_me")))
+
+
 if __name__ == "__main__":
     assert normalize("+31 6 12345678") == "31612345678@s.whatsapp.net"
     assert normalize("31612345678@c.us") == "31612345678@s.whatsapp.net"
@@ -23,4 +28,9 @@ if __name__ == "__main__":
         pass
     else:
         raise AssertionError("expected ValueError")
+    m = {"chat_id": "120363@g.us", "quoted_from_me": False}
+    assert accepts("120363@g.us", False, m)
+    assert not accepts("120363@g.us", True, m)
+    assert accepts("120363@g.us", True, {**m, "quoted_from_me": True})
+    assert not accepts("999@g.us", False, m)
     print("ok")
