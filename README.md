@@ -105,7 +105,7 @@ WhatsApp formatting works in the text: `*bold*`, `_italic_`, `~strike~`.
 ## Testing
 
 1. `Status` shows *Connected*.
-2. Press **Send test message**. A message should arrive in the default chat (set one in *Configure*).
+2. Press **Send test message** on a chat device (it goes to that chat), or on the main WhatsApp device (it goes to the default chat set in *Configure*).
 3. Call `whatsapp_notifier.send_message` in Developer tools > Actions with a `chat_id`.
 4. If something fails, check the add-on log and the *Status* sensor (`pairing_required` or `logged_out` means: link again via `/qr`).
 
