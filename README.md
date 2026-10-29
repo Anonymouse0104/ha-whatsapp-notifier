@@ -12,9 +12,9 @@ It has two parts:
 ## Install
 
 1. HA > Settings > Add-ons > Add-on store > ⋮ > Repositories: add this repo's URL. Install **WhatsApp Bridge**.
-2. Set `pairing_phone` (international number, digits only, e.g. `31612345678`) and an `api_token`. Start it.
+2. Set `pairing_phone` (international number, digits only, e.g. `31612345678`) and an `api_token` (**required**, the bridge refuses to start without one). Under `forward_chats` list the chat IDs whose incoming messages Home Assistant may see (see *Replies*). Start it.
 3. Open the add-on log or the status sensor attributes: you get an 8-character pairing code. On the phone: WhatsApp > Linked devices > Link a device > *Link with phone number instead* > enter the code. The session is stored in the add-on's `/data`, so restarts need no new pairing.
-4. Install the integration via HACS (custom repository, type *Integration*) or copy `custom_components/whatsapp_notifier` into your config folder, restart HA.
+4. Install the integration via HACS (search "WhatsApp Notifier", or add this repo as custom repository, type *Integration*) or copy `custom_components/whatsapp_notifier` into your config folder, restart HA.
 5. Settings > Devices > Add integration > **WhatsApp Notifier**. Host `homeassistant.local` (or the add-on hostname), port `8099`, your token, and the **default chat ID**. Change the default later via the integration's *Configure* button.
 
 No add-ons (HA Container/Core)? Run the bridge anywhere: `cd whatsapp_bridge && npm ci && API_TOKEN=secret PAIRING_PHONE=31612345678 node index.js`.
@@ -49,27 +49,26 @@ data:
 
 ## Replies
 
-Every incoming text message fires the event `whatsapp_notifier_message_received` with `chat_id`, `sender`, `text`, `from_me`, `quoted_message_id`. There is no built-in rule engine: use normal automations, so any language works. Example: ask, then wait up to 10 minutes for "yes" as a reply *to that message*:
+For privacy, only chats listed in the add-on option `forward_chats` are passed on (empty = none). Each incoming text message from those chats fires the event `whatsapp_notifier_message_received` with `chat_id`, `sender`, `text`, `from_me`, `quoted_message_id`. There is no built-in rule engine: use normal automations, so any language works. Example: ask, then wait up to 10 minutes for "yes" as a reply *to that message*:
 
 ```yaml
 actions:
   - action: whatsapp_notifier.send_message
     data: { message: "Bins out tomorrow. Already outside?" }
     response_variable: sent
-  - wait_for_trigger:
-      - trigger: event
-        event_type: whatsapp_notifier_message_received
-        event_data: {}
-        # match in any language; drop the quoted_message_id test to accept any reply
-        # in the chat
-    timeout: "00:10:00"
-    continue_on_timeout: true
-  # Template conditions on the trigger:
-  - condition: template
-    value_template: >
-      {{ wait.trigger is not none
-         and wait.trigger.event.data.quoted_message_id == sent.message_id
-         and wait.trigger.event.data.text | lower in ['yes', 'ja', 'oui'] }}
+  # keep waiting until someone replies to our message; other chat messages are skipped.
+  # On timeout the script stops.
+  - repeat:
+      sequence:
+        - wait_for_trigger:
+            - trigger: event
+              event_type: whatsapp_notifier_message_received
+          timeout: "00:10:00"
+          continue_on_timeout: false
+      # answer words in any language you like
+      until: >
+        {{ wait.trigger.event.data.quoted_message_id == sent.message_id
+           and wait.trigger.event.data.text | lower | trim in ['yes', 'ja', 'oui'] }}
   - action: input_boolean.turn_on
     target: { entity_id: input_boolean.bins_outside }
 ```

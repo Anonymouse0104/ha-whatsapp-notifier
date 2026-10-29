@@ -4,7 +4,7 @@ from __future__ import annotations
 import asyncio
 import logging
 
-from aiohttp import ClientError, ClientSession, WSMsgType
+from aiohttp import ClientError, ClientSession, ClientTimeout, WSMsgType
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.dispatcher import async_dispatcher_send
@@ -36,7 +36,7 @@ class Bridge:
         except ValueError as err:
             raise HomeAssistantError(str(err)) from err
         try:
-            async with self.session.post(self.base + "/send", json=body, headers=self.headers, timeout=20) as r:
+            async with self.session.post(self.base + "/send", json=body, headers=self.headers, timeout=ClientTimeout(total=20)) as r:
                 data = await r.json()
                 if r.status >= 400:
                     raise HomeAssistantError(f"WhatsApp send failed: {data.get('error', r.status)}")

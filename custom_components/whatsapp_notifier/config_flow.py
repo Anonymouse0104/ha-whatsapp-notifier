@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import voluptuous as vol
+from aiohttp import ClientTimeout
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.const import CONF_HOST, CONF_PORT
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -22,7 +23,7 @@ class WhatsAppConfigFlow(ConfigFlow, domain=DOMAIN):
             token = user_input.get(CONF_TOKEN, "")
             headers = {"Authorization": f"Bearer {token}"} if token else {}
             try:
-                async with async_get_clientsession(self.hass).get(url, headers=headers, timeout=10) as r:
+                async with async_get_clientsession(self.hass).get(url, headers=headers, timeout=ClientTimeout(total=10)) as r:
                     if r.status == 401:
                         errors["base"] = "invalid_auth"
                     else:

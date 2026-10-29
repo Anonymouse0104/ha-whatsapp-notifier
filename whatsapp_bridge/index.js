@@ -18,13 +18,21 @@ const opts = (() => {
 const PORT = Number(opts.port ?? process.env.PORT ?? 8099);
 const TOKEN = opts.api_token ?? process.env.API_TOKEN ?? "";
 const PAIR_PHONE = String(opts.pairing_phone ?? process.env.PAIRING_PHONE ?? "").replace(/\D/g, "");
-const AUTH_DIR = process.env.AUTH_DIR ?? (fs.existsSync("/data") ? "/data/auth" : "./auth");
+const FORWARD = [].concat(opts.forward_chats ?? process.env.FORWARD_CHATS?.split(",") ?? [])
+  .map((c) => String(c).trim()).filter(Boolean);
+const AUTH_DIR =process.env.AUTH_DIR ?? (fs.existsSync("/data") ? "/data/auth" : "./auth");
+
+if (!TOKEN) {
+  console.error("api_token is required: anyone on the network could send messages without it");
+  process.exit(1);
+}
 
 const log = pino({ level: "warn" });
 const say = (...a) => console.log(new Date().toISOString(), ...a);
 
 // status: connecting | pairing_required | connected | logged_out | error
-const state = { status: "connecting", pairing_code: null, number: null, error: null };
+const state = { status: "connecting", pairing_code: null, error: null };
+let codeRequested = false; // WhatsApp resends qr every ~20s; a new code would invalidate the one being typed
 let sock = null;
 const sentIds = new Set(); // own sends echo back as fromMe; drop them
 
@@ -54,8 +62,9 @@ async function start() {
   sock.ev.on("creds.update", saveCreds);
 
   sock.ev.on("connection.update", async ({ connection, lastDisconnect, qr }) => {
-    if (qr && !auth.creds.registered) {
+    if (qr && !auth.creds.registered && !codeRequested) {
       if (PAIR_PHONE) {
+        codeRequested = true;
         try {
           const code = await sock.requestPairingCode(PAIR_PHONE);
           setStatus("pairing_required", { pairing_code: code });
@@ -68,8 +77,9 @@ async function start() {
       }
     }
     if (connection === "open") {
-      setStatus("connected", { pairing_code: null, number: sock.user?.id?.split(/[:@]/)[0] ?? null });
+      setStatus("connected", { pairing_code: null });
     } else if (connection === "close") {
+      codeRequested = false;
       const code = lastDisconnect?.error?.output?.statusCode;
       if (code === DisconnectReason.loggedOut) {
         fs.rmSync(AUTH_DIR, { recursive: true, force: true });
@@ -90,6 +100,8 @@ async function start() {
       const text = msg.conversation ?? msg.extendedTextMessage?.text ?? "";
       if (!text) continue;
       const ctx = msg.extendedTextMessage?.contextInfo;
+      const ids = [m.key.remoteJid, m.key.remoteJidAlt].filter(Boolean);
+      if (!FORWARD.some((c) => ids.includes(toJid(c)))) continue; // privacy: only listed chats reach HA
       const isGroup = m.key.remoteJid.endsWith("@g.us");
       broadcast({
         type: "message",
