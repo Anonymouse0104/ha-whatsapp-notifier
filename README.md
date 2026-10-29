@@ -62,6 +62,7 @@ Each chat becomes its own device with:
 | Entity | What it does |
 |---|---|
 | Message (`notify`) | Sends to this chat. |
+| Send test message (`button`) | Sends a test message to this chat. |
 | Last message (`sensor`) | State is the text of the last message received in this chat (max 255 characters). Attributes: `text`, `sender`, `chat_id`, `from_me`, `is_group`, `id`, `quoted_message_id`, `quoted_text`, `quoted_from_me`. |
 
 Use *⋮ > Reconfigure* on the chat to edit it, or delete it to remove the device. **Incoming messages are only passed on from chats you added** (privacy: everything else is dropped in the bridge).
