@@ -50,6 +50,9 @@
           "error": "Error",
           "bridge_unreachable": "Bridge unreachable"
         }
+      },
+      "last_message": {
+        "name": "Last message"
       }
     },
     "button": {

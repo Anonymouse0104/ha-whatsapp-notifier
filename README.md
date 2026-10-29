@@ -38,6 +38,7 @@ You get one device with:
 |---|---|
 | Message (`notify`) | Sends to the default chat. Shows *unknown* until the first message is sent; that is normal. |
 | Status (`sensor`) | `connected`, `connecting`, `pairing_required`, `logged_out`, `error` or `bridge_unreachable`. |
+| Last message (`sensor`) | Text of the last received message from a listed chat (see [Replies](#replies)). Attributes: `chat_id`, `sender`, `text`, `from_me`, `is_group`, `id`, `quoted_message_id`. |
 | Send test message (`button`) | Sends a test message to the default chat. |
 
 Entity IDs follow your HA language (check them under Developer tools > States).
@@ -91,7 +92,7 @@ Omit `chat_id` and the default chat is used. Use `response_variable` to get `mes
 
 Incoming messages are only passed on from chats you list (privacy: everything else is dropped in the bridge). Add them in HA: Settings > Devices > WhatsApp Notifier > *Configure* > **Chats to receive messages from** (one chat ID per entry, e.g. `120363012345678901@g.us`). Changes apply right away.
 
-Each incoming text message then fires the event `whatsapp_notifier_message_received` with `chat_id`, `sender`, `text`, `from_me`, `is_group`, `id` and `quoted_message_id` (the id of the message that was replied to). There is no built-in rule engine: use normal automations, so any language works. Example: ask, then wait up to 10 minutes for "yes" as a reply *to that message*:
+Each incoming text message then updates the **Last message** sensor and fires the event `whatsapp_notifier_message_received` with `chat_id`, `sender`, `text`, `from_me`, `is_group`, `id` and `quoted_message_id` (the id of the message that was replied to). There is no built-in rule engine: use normal automations, so any language works. Example: ask, then wait up to 10 minutes for "yes" as a reply *to that message*:
 
 ```yaml
 actions:

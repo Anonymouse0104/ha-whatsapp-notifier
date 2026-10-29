@@ -10,7 +10,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 
 from .chat_id import normalize
-from .const import DOMAIN, EVENT_MESSAGE, SIGNAL_STATUS
+from .const import DOMAIN, EVENT_MESSAGE, SIGNAL_MESSAGE, SIGNAL_STATUS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,6 +23,7 @@ class Bridge:
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
         self.status = "bridge_unreachable"
         self.attrs: dict = {}
+        self.last_message: dict | None = None
         self.default_chat = lambda: ""
         self.forward_chats = lambda: []
         self._task: asyncio.Task | None = None
@@ -69,7 +70,9 @@ class Bridge:
                         if data.pop("type", None) == "status":
                             self._set(data.pop("status"), data)
                         else:
+                            self.last_message = data
                             self.hass.bus.async_fire(EVENT_MESSAGE, data)
+                            async_dispatcher_send(self.hass, SIGNAL_MESSAGE)
             except asyncio.CancelledError:
                 raise
             except Exception as err:  # noqa: BLE001 - any failure means: retry and show unreachable

@@ -50,6 +50,9 @@
           "error": "Fout",
           "bridge_unreachable": "Bridge onbereikbaar"
         }
+      },
+      "last_message": {
+        "name": "Laatste bericht"
       }
     },
     "button": {
