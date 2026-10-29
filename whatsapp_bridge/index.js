@@ -19,14 +19,19 @@ const opts = (() => {
 const PORT = Number(opts.port ?? process.env.PORT ?? 8099);
 const TOKEN = opts.api_token ?? process.env.API_TOKEN ?? "";
 const PAIR_PHONE = String(opts.pairing_phone ?? process.env.PAIRING_PHONE ?? "").replace(/\D/g, "");
-const FORWARD = [].concat(opts.forward_chats ?? process.env.FORWARD_CHATS?.split(",") ?? [])
-  .map((c) => String(c).trim()).filter(Boolean);
 const AUTH_DIR =process.env.AUTH_DIR ?? (fs.existsSync("/data") ? "/data/auth" : "./auth");
 
 if (!TOKEN) {
   console.error("api_token is required: anyone on the network could send messages without it");
   process.exit(1);
 }
+
+// chats whose incoming messages reach HA; set by the integration (POST /forward), kept across restarts
+const FWD_FILE = (fs.existsSync("/data") ? "/data" : ".") + "/forward.json";
+let FORWARD = [];
+try {
+  FORWARD = JSON.parse(fs.readFileSync(FWD_FILE, "utf8"));
+} catch {}
 
 const log = pino({ level: "warn" });
 const say = (...a) => console.log(new Date().toISOString(), ...a);
@@ -137,6 +142,17 @@ const server = http.createServer(async (req, res) => {
   if (!authed(req, url)) return json(res, 401, { error: "unauthorized" });
   try {
     if (req.method === "GET" && url.pathname === "/status") return json(res, 200, state);
+    if (url.pathname === "/forward") {
+      if (req.method === "POST") {
+        let raw = "";
+        for await (const c of req) raw += c;
+        const { chats } = JSON.parse(raw || "{}");
+        if (!Array.isArray(chats)) return json(res, 400, { error: "chats must be a list" });
+        FORWARD = chats.map((c) => String(c).trim()).filter(Boolean);
+        fs.writeFileSync(FWD_FILE, JSON.stringify(FORWARD));
+      }
+      return json(res, 200, { chats: FORWARD });
+    }
     if (req.method === "GET" && url.pathname === "/qr") {
       if (!lastQr) return json(res, 404, { error: "no QR available (already linked?)" });
       const img = await QRCode.toDataURL(lastQr, { width: 320 });

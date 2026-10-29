@@ -6,7 +6,9 @@ from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.const import CONF_HOST, CONF_PORT
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .const import CONF_DEFAULT_CHAT, CONF_TOKEN, DOMAIN
+from homeassistant.helpers.selector import TextSelector, TextSelectorConfig
+
+from .const import CONF_DEFAULT_CHAT, CONF_FORWARD_CHATS, CONF_TOKEN, DOMAIN
 
 
 class WhatsAppConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -54,7 +56,13 @@ class WhatsAppOptionsFlow(OptionsFlow):
     async def async_step_init(self, user_input=None):
         if user_input is not None:
             return self.async_create_entry(data=user_input)
-        current = self.config_entry.options.get(CONF_DEFAULT_CHAT, "")
-        return self.async_show_form(
-            step_id="init", data_schema=vol.Schema({vol.Optional(CONF_DEFAULT_CHAT, default=current): str})
+        o = self.config_entry.options
+        schema = vol.Schema(
+            {
+                vol.Optional(CONF_DEFAULT_CHAT, default=o.get(CONF_DEFAULT_CHAT, "")): str,
+                vol.Optional(CONF_FORWARD_CHATS, default=o.get(CONF_FORWARD_CHATS, [])): TextSelector(
+                    TextSelectorConfig(multiple=True)
+                ),
+            }
         )
+        return self.async_show_form(step_id="init", data_schema=schema)

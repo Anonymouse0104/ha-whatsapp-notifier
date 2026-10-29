@@ -1,14 +1,77 @@
 {
   "config": {
-    "step": {"user": {"title": "WhatsApp bridge", "data": {"host": "Bridge host", "port": "Port", "token": "API token", "default_chat_id": "Default chat ID"}}},
-    "error": {"cannot_connect": "Cannot reach the bridge", "invalid_auth": "Invalid API token"},
-    "abort": {"already_configured": "Already configured"}
+    "step": {
+      "user": {
+        "title": "WhatsApp bridge",
+        "data": {
+          "host": "Bridge host",
+          "port": "Port",
+          "token": "API token",
+          "default_chat_id": "Default chat ID"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot reach the bridge",
+      "invalid_auth": "Invalid API token"
+    },
+    "abort": {
+      "already_configured": "Already configured"
+    }
   },
-  "options": {"step": {"init": {"title": "Options", "data": {"default_chat_id": "Default chat ID"}}}},
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "data": {
+          "default_chat_id": "Default chat ID",
+          "forward_chats": "Chats to receive messages from"
+        },
+        "data_description": {
+          "forward_chats": "Chat IDs (person number or group ID). Incoming messages from these chats fire the whatsapp_notifier_message_received event."
+        }
+      }
+    }
+  },
   "entity": {
-    "notify": {"notify": {"name": "Message"}},
-    "sensor": {"status": {"name": "Status", "state": {"connected": "Connected", "connecting": "Connecting", "pairing_required": "Pairing required", "logged_out": "Logged out", "error": "Error", "bridge_unreachable": "Bridge unreachable"}}},
-    "button": {"test_message": {"name": "Send test message"}}
+    "notify": {
+      "notify": {
+        "name": "Message"
+      }
+    },
+    "sensor": {
+      "status": {
+        "name": "Status",
+        "state": {
+          "connected": "Connected",
+          "connecting": "Connecting",
+          "pairing_required": "Pairing required",
+          "logged_out": "Logged out",
+          "error": "Error",
+          "bridge_unreachable": "Bridge unreachable"
+        }
+      }
+    },
+    "button": {
+      "test_message": {
+        "name": "Send test message"
+      }
+    }
   },
-  "services": {"send_message": {"name": "Send message", "description": "Send a WhatsApp message; chat_id overrides the default chat.", "fields": {"message": {"name": "Message", "description": "Text to send"}, "chat_id": {"name": "Chat ID", "description": "Phone number or group ID (default chat if empty)"}}}}
+  "services": {
+    "send_message": {
+      "name": "Send message",
+      "description": "Send a WhatsApp message; chat_id overrides the default chat.",
+      "fields": {
+        "message": {
+          "name": "Message",
+          "description": "Text to send"
+        },
+        "chat_id": {
+          "name": "Chat ID",
+          "description": "Phone number or group ID (default chat if empty)"
+        }
+      }
+    }
+  }
 }

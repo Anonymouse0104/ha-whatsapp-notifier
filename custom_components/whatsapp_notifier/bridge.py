@@ -24,6 +24,7 @@ class Bridge:
         self.status = "bridge_unreachable"
         self.attrs: dict = {}
         self.default_chat = lambda: ""
+        self.forward_chats = lambda: []
         self._task: asyncio.Task | None = None
 
     def _set(self, status: str, attrs: dict | None = None) -> None:
@@ -55,6 +56,12 @@ class Bridge:
         while True:
             try:
                 async with self.session.ws_connect(self.base + "/ws", headers=self.headers, heartbeat=30) as ws:
+                    # the bridge forgets nothing, but HA is the source of truth for this list
+                    async with self.session.post(
+                        self.base + "/forward", json={"chats": self.forward_chats()},
+                        headers=self.headers, timeout=ClientTimeout(total=10),
+                    ):
+                        pass
                     async for msg in ws:
                         if msg.type != WSMsgType.TEXT:
                             continue

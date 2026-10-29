@@ -19,7 +19,6 @@ It has two parts:
 2. On the *Configuration* tab set:
    - `api_token` (**required**): make up a long password. The bridge refuses to start without one. You need it again below.
    - `pairing_phone`: leave **empty** to link with a QR code (recommended, see below).
-   - `forward_chats`: leave empty for now. See [Replies](#replies).
 3. Save and start the add-on.
 
 ### 2. Link your WhatsApp (QR code)
@@ -45,7 +44,7 @@ You get one device with:
 
 Entity IDs follow your HA language (check them under Developer tools > States).
 
-No add-ons (HA Container/Core)? Run the bridge anywhere: `cd whatsapp_bridge && npm ci && API_TOKEN=secret node index.js`, then open `/qr` as above. Optional env vars: `PORT`, `PAIRING_PHONE`, `FORWARD_CHATS` (comma separated), `AUTH_DIR`.
+No add-ons (HA Container/Core)? Run the bridge anywhere: `cd whatsapp_bridge && npm ci && API_TOKEN=secret node index.js`, then open `/qr` as above. Optional env vars: `PORT`, `PAIRING_PHONE`, `AUTH_DIR`.
 
 ## Finding chat IDs
 
@@ -92,7 +91,7 @@ Omit `chat_id` and the default chat is used. Use `response_variable` to get `mes
 
 ## Replies
 
-Incoming messages are only passed on from chats listed in the add-on option `forward_chats` (privacy: everything else is dropped in the bridge). Add the chat IDs there, e.g. `120363012345678901@g.us`, and restart the add-on.
+Incoming messages are only passed on from chats you list (privacy: everything else is dropped in the bridge). Add them in HA: Settings > Devices > WhatsApp Notifier > *Configure* > **Chats to receive messages from** (one chat ID per entry, e.g. `120363012345678901@g.us`). Changes apply right away.
 
 Each incoming text message then fires the event `whatsapp_notifier_message_received` with `chat_id`, `sender`, `text`, `from_me`, `is_group`, `id` and `quoted_message_id` (the id of the message that was replied to). There is no built-in rule engine: use normal automations, so any language works. Example: ask, then wait up to 10 minutes for "yes" as a reply *to that message*:
 
