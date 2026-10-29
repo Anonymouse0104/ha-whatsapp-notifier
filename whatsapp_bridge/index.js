@@ -2,6 +2,7 @@ import fs from "node:fs";
 import http from "node:http";
 import { WebSocketServer } from "ws";
 import pino from "pino";
+import QRCode from "qrcode";
 import makeWASocket, {
   DisconnectReason,
   fetchLatestBaileysVersion,
@@ -32,6 +33,7 @@ const say = (...a) => console.log(new Date().toISOString(), ...a);
 
 // status: connecting | pairing_required | connected | logged_out | error
 const state = { status: "connecting", pairing_code: null, error: null };
+let lastQr = null; // served at /qr as a scannable alternative to the pairing code
 let codeRequested = false; // WhatsApp resends qr every ~20s; a new code would invalidate the one being typed
 let sock = null;
 const sentIds = new Set(); // own sends echo back as fromMe; drop them
@@ -62,6 +64,7 @@ async function start() {
   sock.ev.on("creds.update", saveCreds);
 
   sock.ev.on("connection.update", async ({ connection, lastDisconnect, qr }) => {
+    if (qr) lastQr = qr;
     if (qr && !auth.creds.registered && !codeRequested) {
       if (PAIR_PHONE) {
         codeRequested = true;
@@ -73,10 +76,11 @@ async function start() {
           setStatus("error", { error: String(e.message ?? e) });
         }
       } else {
-        setStatus("pairing_required", { error: "set pairing_phone in the add-on options" });
+        setStatus("pairing_required", { error: "open http://<host>:" + PORT + "/qr?token=<api_token> and scan with WhatsApp > Linked devices" });
       }
     }
     if (connection === "open") {
+      lastQr = null;
       setStatus("connected", { pairing_code: null });
     } else if (connection === "close") {
       codeRequested = false;
@@ -133,6 +137,12 @@ const server = http.createServer(async (req, res) => {
   if (!authed(req, url)) return json(res, 401, { error: "unauthorized" });
   try {
     if (req.method === "GET" && url.pathname === "/status") return json(res, 200, state);
+    if (req.method === "GET" && url.pathname === "/qr") {
+      if (!lastQr) return json(res, 404, { error: "no QR available (already linked?)" });
+      const img = await QRCode.toDataURL(lastQr, { width: 320 });
+      res.writeHead(200, { "content-type": "text/html" });
+      return res.end(`<meta http-equiv="refresh" content="15"><img src="${img}"><p>WhatsApp > Linked devices > Link a device. Page refreshes every 15s.</p>`);
+    }
     if (req.method === "GET" && url.pathname === "/groups") {
       if (state.status !== "connected") return json(res, 503, { error: "not connected" });
       const g = await sock.groupFetchAllParticipating();
