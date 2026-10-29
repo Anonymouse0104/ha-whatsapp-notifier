@@ -7,8 +7,6 @@ It has two parts:
 1. **Bridge add-on** (`whatsapp_bridge/`): a small Node service using [Baileys](https://github.com/WhiskeySockets/Baileys). It links to your WhatsApp account as a *linked device* (like WhatsApp Web).
 2. **Integration** (`custom_components/whatsapp_notifier/`): a notify entity, a `send_message` service, a status sensor, a test button and an event for incoming messages.
 
-![The WhatsApp Notifier device in Home Assistant](docs/device.png)
-
 > **Disclaimer:** Baileys uses the unofficial WhatsApp Web protocol. This is against WhatsApp's terms and the account can be banned. Use a dedicated number, send low volumes, never spam.
 
 ## Install

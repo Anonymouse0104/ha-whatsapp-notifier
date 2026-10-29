@@ -110,7 +110,9 @@ async function start() {
       if (!text) continue;
       const ctx = msg.extendedTextMessage?.contextInfo;
       const ids = [m.key.remoteJid, m.key.remoteJidAlt].filter(Boolean);
-      if (!FORWARD.some((c) => ids.includes(toJid(c)))) continue; // privacy: only listed chats reach HA
+      const ok = FORWARD.some((c) => ids.includes(toJid(c))); // privacy: only listed chats reach HA
+      say(ok ? "forwarding message from" : "ignoring message from unlisted chat", ids.join(" / "), m.key.fromMe ? "(from me)" : "");
+      if (!ok) continue;
       const isGroup = m.key.remoteJid.endsWith("@g.us");
       broadcast({
         type: "message",
@@ -150,6 +152,7 @@ const server = http.createServer(async (req, res) => {
         if (!Array.isArray(chats)) return json(res, 400, { error: "chats must be a list" });
         FORWARD = chats.map((c) => String(c).trim()).filter(Boolean);
         fs.writeFileSync(FWD_FILE, JSON.stringify(FORWARD));
+        say("forward list set:", FORWARD.join(", ") || "(empty)");
       }
       return json(res, 200, { chats: FORWARD });
     }
