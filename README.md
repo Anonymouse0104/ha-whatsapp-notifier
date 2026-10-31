@@ -13,6 +13,18 @@ Needs Home Assistant 2025.3 or newer.
 
 > **Disclaimer:** Baileys uses the unofficial WhatsApp Web protocol. This is against WhatsApp's terms and the account can be banned. Use a dedicated number, send low volumes, never spam.
 
+## Examples
+
+Messages sent from Home Assistant with this integration (the texts are Dutch, yours can say anything):
+
+<p>
+  <img src="docs/screenshots/afval-herinnering.png" alt="Waste reminder that stops when you reply" width="280">
+  <img src="docs/screenshots/wasmachine-klaar.png" alt="Washing machine finished, with a reminder if nobody replies" width="280">
+  <img src="docs/screenshots/weerbericht.png" alt="Weather warning" width="420">
+</p>
+
+The first two ask for a reply. A reply to the message can stop the reminder, see [Replies](#replies).
+
 ## Install
 
 ### 1. Bridge add-on
