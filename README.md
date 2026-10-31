@@ -4,7 +4,7 @@ Send WhatsApp messages from Home Assistant to a person or a group, and react to 
 
 It has two parts:
 
-1. **Bridge add-on** (`whatsapp_bridge/`): a small Node service using [Baileys](https://github.com/WhiskeySockets/Baileys). It links to your WhatsApp account as a *linked device* (like WhatsApp Web).
+1. **Bridge app** (`whatsapp_bridge/`, called an add-on before Home Assistant 2026.2): a small Node service using [Baileys](https://github.com/WhiskeySockets/Baileys). It links to your WhatsApp account as a *linked device* (like WhatsApp Web).
 2. **Integration** (`custom_components/whatsapp_notifier/`): a status sensor, a test button, a `send_message` service, and **one device per chat** with its own notify entity and "Last message" sensor.
 
 Needs Home Assistant 2025.3 or newer.
@@ -27,28 +27,32 @@ The first two ask for a reply. A reply to the message can stop the reminder, see
 
 ## Install
 
-### 1. Bridge add-on
+### 1. Bridge app
 
-1. HA > Settings > Add-ons > Add-on store > ⋮ > Repositories: add `https://github.com/Anonymouse0104/ha-whatsapp-notifier`. Install **WhatsApp Bridge**.
+1. Click this button to add the repository to your Home Assistant, then install **WhatsApp Bridge**:
+
+   [![Open your Home Assistant instance and show the add app repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FAnonymouse0104%2Fha-whatsapp-notifier)
+
+   Or add it by hand: HA > Settings > Apps, open the store, then ⋮ > Repositories, and add `https://github.com/Anonymouse0104/ha-whatsapp-notifier`. (Before Home Assistant 2026.2 this was Settings > Add-ons.)
 2. On the *Configuration* tab set:
    - `api_token` (**required**): make up a long password. The bridge refuses to start without one. You need it again below.
    - `pairing_phone`: leave **empty** to link with a QR code (recommended, see below).
-3. Save and start the add-on.
+3. Save and start the app.
 
 ### 2. Link your WhatsApp (QR code)
 
 1. Open `http://homeassistant.local:8099/qr?token=<api_token>` on a computer. You see a QR code that refreshes every 15 seconds.
 2. On the phone of the number that will send the messages: WhatsApp > Settings > Linked devices > Link a device, and scan the QR code.
-3. The add-on log now shows `status connected` (a `515` stream error right after linking is normal). The session is stored in the add-on's `/data`, so restarts need no new pairing.
+3. The app log now shows `status connected` (a `515` stream error right after linking is normal). The session is stored in the app's `/data`, so restarts need no new pairing.
 
-Alternative: put your number in `pairing_phone` (international, digits only, e.g. `31612345678`), restart the add-on and enter the 8-character code from the log under *Link with phone number instead*. This has failed on some iPhones, so prefer the QR code. Never use both at once: clear `pairing_phone` when you use the QR page.
+Alternative: put your number in `pairing_phone` (international, digits only, e.g. `31612345678`), restart the app and enter the 8-character code from the log under *Link with phone number instead*. This has failed on some iPhones, so prefer the QR code. Never use both at once: clear `pairing_phone` when you use the QR page.
 
 ### 3. Integration
 
 1. Install via HACS: ⋮ > Custom repositories > this repo's URL, category *Integration*. Restart HA. (Or copy `custom_components/whatsapp_notifier` into your config folder.)
 2. Settings > Devices > Add integration > **WhatsApp Notifier**: host `homeassistant.local` (or the HA address), port `8099`, your `api_token` and optionally a **default chat ID**. Change the default later with the integration's *Configure* button.
 
-No add-ons (HA Container/Core)? Run the bridge anywhere: `cd whatsapp_bridge && npm ci && API_TOKEN=secret node index.js`, then open `/qr` as above. Optional env vars: `PORT`, `PAIRING_PHONE`, `AUTH_DIR`.
+No apps (HA Container/Core)? Run the bridge anywhere: `cd whatsapp_bridge && npm ci && API_TOKEN=secret node index.js`, then open `/qr` as above. Optional env vars: `PORT`, `PAIRING_PHONE`, `AUTH_DIR`.
 
 ## Finding chat IDs
 
@@ -121,7 +125,7 @@ WhatsApp formatting works in the text: `*bold*`, `_italic_`, `~strike~`.
 1. `Status` shows *Connected*.
 2. Press **Send test message** on a chat device (it goes to that chat), or on the main WhatsApp device (it goes to the default chat set in *Configure*).
 3. Call `whatsapp_notifier.send_message` in Developer tools > Actions with a `chat_id`.
-4. If something fails, check the add-on log and the *Status* sensor (`pairing_required` or `logged_out` means: link again via `/qr`).
+4. If something fails, check the app log and the *Status* sensor (`pairing_required` or `logged_out` means: link again via `/qr`).
 
 ## Replies
 
