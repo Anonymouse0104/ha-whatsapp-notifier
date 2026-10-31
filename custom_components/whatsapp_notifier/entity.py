@@ -17,7 +17,7 @@ class Base(Entity):
         if subentry:
             self._attr_unique_id = f"{subentry.subentry_id}_{key}"
             self._attr_device_info = DeviceInfo(
-                identifiers={(DOMAIN, subentry.subentry_id)}, name=subentry.title, via_device=(DOMAIN, entry.entry_id)
+                identifiers={(DOMAIN, subentry.subentry_id)}, name=subentry.title, via_device_id=bridge.device_id
             )
         else:
             self._attr_unique_id = f"{entry.entry_id}_{key}"

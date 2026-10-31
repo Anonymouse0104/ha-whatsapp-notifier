@@ -6,6 +6,7 @@ from homeassistant.const import CONF_HOST, CONF_PORT, Platform
 from homeassistant.core import HomeAssistant, ServiceCall, SupportsResponse
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .bridge import Bridge
@@ -21,6 +22,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     bridge = Bridge(hass, async_get_clientsession(hass), d[CONF_HOST], d[CONF_PORT], d.get(CONF_TOKEN, ""))
     bridge.default_chat = lambda: entry.options.get(CONF_DEFAULT_CHAT, "")
     bridge.forward_chats = lambda: [sub.data[CONF_CHAT_ID] for sub in entry.subentries.values()]
+    # chat devices link to this one via via_device_id, which needs the registry id
+    bridge.device_id = dr.async_get(hass).async_get_or_create(
+        config_entry_id=entry.entry_id, identifiers={(DOMAIN, entry.entry_id)}, name="WhatsApp"
+    ).id
     bridge.start()
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = bridge
 
