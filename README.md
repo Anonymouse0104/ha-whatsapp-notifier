@@ -9,6 +9,8 @@ It has two parts:
 
 Needs Home Assistant 2025.3 or newer.
 
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Anonymouse0104&repository=ha-whatsapp-notifier&category=integration)
+
 > **Disclaimer:** Baileys uses the unofficial WhatsApp Web protocol. This is against WhatsApp's terms and the account can be banned. Use a dedicated number, send low volumes, never spam.
 
 ## Install
@@ -221,3 +223,7 @@ Messages you type on your own phone arrive on the linked device too (`from_me: t
 ## Status
 
 Linking, sending to a group and the *Last message* sensor are confirmed to work. Per-chat devices and *Only replies* need real-world feedback: please open an issue.
+
+## Support
+
+If this integration saves you some time, you can [buy me a coffee](https://buymeacoffee.com/anonymouse0501). It's entirely optional, and the integration stays free either way.
