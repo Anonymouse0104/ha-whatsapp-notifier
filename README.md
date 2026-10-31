@@ -226,4 +226,4 @@ Linking, sending to a group and the *Last message* sensor are confirmed to work.
 
 ## Support
 
-If this integration saves you some time, you can [buy me a coffee](https://buymeacoffee.com/anonymouse0501). It's entirely optional, and the integration stays free either way.
+If this integration saves you some time, you can [support me on Ko-fi](https://ko-fi.com/anonymouse0501). It's entirely optional, and the integration stays free either way.
