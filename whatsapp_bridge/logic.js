@@ -1,7 +1,7 @@
 import { jidNormalizedUser } from "@whiskeysockets/baileys";
 
 export function toJid(chatId) {
-  const id = String(chatId).trim().replace(/@c\.us$/, "@s.whatsapp.net"); // Green-API format
+  const id = String(chatId).trim().replace(/@c\.us$/, "@s.whatsapp.net"); // legacy @c.us format
   if (id.includes("@")) return id;
   const digits = id.replace(/\D/g, "");
   if (!digits) throw new Error("invalid chat_id");

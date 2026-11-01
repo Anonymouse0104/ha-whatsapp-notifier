@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { buildContent, makeLimiter, quotedFromMe, shouldForward, toJid } from "./logic.js";
 
-test("toJid accepts numbers, Green-API ids and groups", () => {
+test("toJid accepts numbers, @c.us ids and groups", () => {
   assert.equal(toJid("+31 6 12345678"), "31612345678@s.whatsapp.net");
   assert.equal(toJid("31612345678@c.us"), "31612345678@s.whatsapp.net");
   assert.equal(toJid("120363@g.us"), "120363@g.us");

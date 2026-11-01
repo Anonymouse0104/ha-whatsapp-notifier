@@ -1,4 +1,4 @@
-"""Chat ID normalisation (accepts Green-API style ids too)."""
+"""Chat ID normalisation (also accepts `@c.us` style ids)."""
 
 
 def normalize(chat_id: str) -> str:

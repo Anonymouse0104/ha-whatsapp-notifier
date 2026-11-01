@@ -12,7 +12,14 @@
 
 ## Nederlands
 
-Stuur WhatsApp-berichten vanuit Home Assistant naar een persoon of groep, en reageer op antwoorden, **zonder externe dienst** (geen Green-API). Alles draait op je eigen Home Assistant.
+Stuur WhatsApp-berichten vanuit Home Assistant naar een persoon of groep, en reageer op antwoorden, **zonder externe server of abonnement**. Alles draait op je eigen Home Assistant.
+
+**Waarom deze integratie?**
+
+- 👥 **Stuur naar WhatsApp-groepen**, niet alleen naar personen, met opmaak en afbeeldingen.
+- 💬 **Antwoord via WhatsApp en laat Home Assistant handelen.** Een antwoord ("ja", "klaar") start een automatisering, bijvoorbeeld een herinnering stoppen of een schakelaar omzetten. Je kunt zelfs koppelen aan één specifiek bericht.
+- 🔒 **Zelf gehost.** Geen externe server, geen abonnement.
+- 🧩 **Eén apparaat per chat**, met eigen notify-entiteit en sensor voor het laatste bericht.
 
 Het bestaat uit twee delen:
 
@@ -67,7 +74,7 @@ Geen apps (HA Container/Core)? Draai de bridge ergens anders: `cd whatsapp_bridg
 ### Chat-ID's vinden
 
 **Een persoon:** het telefoonnummer met landcode, alleen cijfers, zonder `+` en zonder voorloop-`0`.
-`06 12345678` in Nederland wordt `31612345678`. (`31612345678@c.us` en `31612345678@s.whatsapp.net` werken ook, zodat Green-API-automatiseringen blijven werken.)
+`06 12345678` in Nederland wordt `31612345678`. (`31612345678@c.us` en `31612345678@s.whatsapp.net` werken ook, zodat bestaande automatiseringen met dat formaat blijven werken.)
 
 **Een groep:** open dit in een browser op je netwerk:
 
@@ -276,7 +283,14 @@ Bespaart deze integratie je tijd, dan kun je me [steunen op Ko-fi](https://ko-fi
 
 ## English
 
-Send WhatsApp messages from Home Assistant to a person or a group, and react to replies, **without a third-party service** (no Green-API). Everything runs on your own Home Assistant.
+Send WhatsApp messages from Home Assistant to a person or a group, and react to replies, **without an external server or subscription**. Everything runs on your own Home Assistant.
+
+**Why this integration?**
+
+- 👥 **Send to WhatsApp groups**, not just to people, with formatting and images.
+- 💬 **Reply in WhatsApp and let Home Assistant act on it.** A reply ("yes", "done") starts an automation, for example stopping a reminder or flipping a switch. You can even tie a reply to one specific message.
+- 🔒 **Self-hosted.** No external server, no subscription.
+- 🧩 **One device per chat**, with its own notify entity and last-message sensor.
 
 It has two parts:
 
@@ -331,7 +345,7 @@ No apps (HA Container/Core)? Run the bridge anywhere: `cd whatsapp_bridge && npm
 ### Finding chat IDs
 
 **A person:** the phone number with country code, digits only, no `+`, no leading `0`.
-`06 12345678` in the Netherlands becomes `31612345678`. (`31612345678@c.us` and `31612345678@s.whatsapp.net` also work, so Green-API automations keep working.)
+`06 12345678` in the Netherlands becomes `31612345678`. (`31612345678@c.us` and `31612345678@s.whatsapp.net` also work, so existing automations using that format keep working.)
 
 **A group:** open this in a browser on your network:
 
