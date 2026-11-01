@@ -69,6 +69,10 @@
         "chat_id": {
           "name": "Chat ID",
           "description": "Phone number or group ID (default chat if empty)"
+        },
+        "image": {
+          "name": "Image",
+          "description": "Path of a PNG/JPEG file to send; the message becomes the caption. Must be in an allowed folder such as /config/www (max 5 MB)"
         }
       }
     }

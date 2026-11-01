@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 import logging
 
 from aiohttp import ClientError, ClientSession, ClientTimeout, WSMsgType
@@ -31,11 +32,13 @@ class Bridge:
         self.status, self.attrs = status, attrs or {}
         async_dispatcher_send(self.hass, SIGNAL_STATUS)
 
-    async def send(self, chat_id: str, message: str) -> str:
+    async def send(self, chat_id: str, message: str, image: bytes | None = None) -> str:
         try:
             body = {"chat_id": normalize(chat_id), "message": message}
         except ValueError as err:
             raise HomeAssistantError(str(err)) from err
+        if image:
+            body["image"] = base64.b64encode(image).decode()
         try:
             async with self.session.post(self.base + "/send", json=body, headers=self.headers, timeout=ClientTimeout(total=20)) as r:
                 data = await r.json()
