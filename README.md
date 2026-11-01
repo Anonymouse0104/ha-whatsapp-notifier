@@ -131,6 +131,16 @@ WhatsApp formatting works in the text: `*bold*`, `_italic_`, `~strike~`.
 
 When someone writes in a chat you added, its **Last message** sensor updates and the event `whatsapp_notifier_message_received` fires with the same fields as the sensor attributes.
 
+**Send an image:** give `whatsapp_notifier.send_message` an `image` (path of a PNG or JPEG, max 5 MB). The `message` becomes the caption. The file must be in a folder Home Assistant allows, such as `/config/www` (or one listed in `allowlist_external_dirs`). This needs bridge add-on 0.3.0 or newer.
+
+```yaml
+action: whatsapp_notifier.send_message
+data:
+  chat_id: "120363012345678901@g.us"
+  message: "Weekly chart"
+  image: /config/www/chart.png
+```
+
 **Reply to one specific message:** WhatsApp lets people swipe a message and answer on it. Then `quoted_message_id` is the id of the message that was answered, `quoted_text` is its text, and `quoted_from_me` is `true` when it was a message sent by the bridge. Tick *Only replies to messages sent by this bridge* on a chat and its sensor ignores everything else. To tie an answer to one exact message, compare `quoted_message_id` with the `message_id` returned by `whatsapp_notifier.send_message`.
 
 Example: ask, then wait up to 10 minutes for "yes" as a reply *to that message*:

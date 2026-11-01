@@ -9,3 +9,7 @@ send_message:
       example: "31612345678 or 120363012345@g.us"
       selector:
         text:
+    image:
+      example: "/config/www/chart.png"
+      selector:
+        text:

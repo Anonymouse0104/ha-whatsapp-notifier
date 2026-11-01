@@ -14,7 +14,18 @@ from .const import CONF_CHAT_ID, CONF_DEFAULT_CHAT, CONF_TOKEN, DOMAIN
 
 PLATFORMS = [Platform.NOTIFY, Platform.SENSOR, Platform.BUTTON]
 
-SEND_SCHEMA = vol.Schema({vol.Required("message"): cv.string, vol.Optional("chat_id"): cv.string})
+SEND_SCHEMA = vol.Schema(
+    {vol.Required("message"): cv.string, vol.Optional("chat_id"): cv.string, vol.Optional("image"): cv.string}
+)
+MAX_IMAGE_BYTES = 5 * 1024 * 1024
+
+
+def _read_image(path: str) -> bytes:
+    with open(path, "rb") as f:
+        data = f.read(MAX_IMAGE_BYTES + 1)
+    if len(data) > MAX_IMAGE_BYTES:
+        raise HomeAssistantError("Image is larger than 5 MB")
+    return data
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -33,7 +44,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         chat = call.data.get("chat_id") or bridge.default_chat()
         if not chat:
             raise HomeAssistantError("No chat_id given and no default chat configured")
-        return {"message_id": await bridge.send(chat, call.data["message"])}
+        image = None
+        if path := call.data.get("image"):
+            if not hass.config.is_allowed_path(path):
+                raise HomeAssistantError(f"Image path is not allowed (see allowlist_external_dirs): {path}")
+            try:
+                image = await hass.async_add_executor_job(_read_image, path)
+            except OSError as err:
+                raise HomeAssistantError(f"Cannot read image {path}: {err}") from err
+        return {"message_id": await bridge.send(chat, call.data["message"], image)}
 
     # single-bridge setup: the service is bound to the first entry
     if not hass.services.has_service(DOMAIN, "send_message"):

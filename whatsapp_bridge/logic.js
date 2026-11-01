@@ -8,6 +8,16 @@ export function toJid(chatId) {
   return `${digits}@s.whatsapp.net`;
 }
 
+export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
+// plain text, or an image (base64) with the message as caption
+export function buildContent({ message, image }) {
+  if (!image) return { text: String(message) };
+  const buf = Buffer.from(String(image), "base64");
+  if (!buf.length || buf.length > MAX_IMAGE_BYTES) throw new Error("image must be between 1 byte and 5 MB");
+  return { image: buf, caption: String(message ?? "") };
+}
+
 // privacy: only chats the user added in HA reach HA
 export const shouldForward = (forward, ids) => forward.some((c) => ids.includes(toJid(c)));
 

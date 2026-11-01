@@ -69,6 +69,10 @@
         "chat_id": {
           "name": "Chat-ID",
           "description": "Telefoonnummer of groeps-ID (standaardchat indien leeg)"
+        },
+        "image": {
+          "name": "Afbeelding",
+          "description": "Pad naar een PNG/JPEG-bestand; het bericht wordt het bijschrift. Moet in een toegestane map staan, zoals /config/www (max 5 MB)"
         }
       }
     }

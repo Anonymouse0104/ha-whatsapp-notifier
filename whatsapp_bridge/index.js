@@ -8,7 +8,7 @@ import makeWASocket, {
   fetchLatestBaileysVersion,
   useMultiFileAuthState,
 } from "@whiskeysockets/baileys";
-import { makeLimiter, quotedFromMe, shouldForward, toJid } from "./logic.js";
+import { buildContent, makeLimiter, quotedFromMe, shouldForward, toJid } from "./logic.js";
 
 const opts = (() => {
   try {
@@ -172,11 +172,20 @@ const server = http.createServer(async (req, res) => {
     if (req.method === "POST" && url.pathname === "/send") {
       if (state.status !== "connected") return json(res, 503, { error: "not connected" });
       let raw = "";
-      for await (const c of req) raw += c;
-      const { chat_id, message } = JSON.parse(raw || "{}");
-      if (!chat_id || !message) return json(res, 400, { error: "chat_id and message required" });
+      for await (const c of req) {
+        raw += c;
+        if (raw.length > 8 * 1024 * 1024) return json(res, 413, { error: "request too large" });
+      }
+      const { chat_id, message, image } = JSON.parse(raw || "{}");
+      if (!chat_id || !(message || image)) return json(res, 400, { error: "chat_id and message (or image) required" });
+      let content;
+      try {
+        content = buildContent({ message, image });
+      } catch (e) {
+        return json(res, 400, { error: String(e.message) });
+      }
       if (!allowSend()) return json(res, 429, { error: "too many messages (max 20 per minute)" });
-      const sent = await sock.sendMessage(toJid(chat_id), { text: String(message) });
+      const sent = await sock.sendMessage(toJid(chat_id), content);
       sentIds.add(sent.key.id);
       if (sentIds.size > 500) sentIds.delete(sentIds.values().next().value);
       return json(res, 200, { id: sent.key.id });

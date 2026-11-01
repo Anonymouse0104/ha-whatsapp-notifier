@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { makeLimiter, quotedFromMe, shouldForward, toJid } from "./logic.js";
+import { buildContent, makeLimiter, quotedFromMe, shouldForward, toJid } from "./logic.js";
 
 test("toJid accepts numbers, Green-API ids and groups", () => {
   assert.equal(toJid("+31 6 12345678"), "31612345678@s.whatsapp.net");
@@ -25,6 +25,16 @@ test("quotedFromMe", () => {
   assert.equal(quotedFromMe({ ...base, ctx: { stanzaId: "B" } }), false); // group, unknown sender
   assert.equal(quotedFromMe({ ...base, isGroup: false, ctx: { stanzaId: "B" } }), true); // private, other person answers
   assert.equal(quotedFromMe({ ...base, isGroup: false, fromMe: true, ctx: { stanzaId: "B" } }), false);
+});
+
+test("buildContent: text, image with caption, bad image", () => {
+  assert.deepEqual(buildContent({ message: "hi" }), { text: "hi" });
+  const c = buildContent({ message: "cap", image: Buffer.from("png").toString("base64") });
+  assert.equal(c.caption, "cap");
+  assert.equal(c.image.toString(), "png");
+  assert.equal(buildContent({ image: "aGk=" }).caption, "");
+  assert.throws(() => buildContent({ message: "x", image: "" + "=" }));
+  assert.throws(() => buildContent({ message: "x", image: Buffer.alloc(5 * 1024 * 1024 + 1).toString("base64") }));
 });
 
 test("limiter blocks the 3rd message in a window and recovers", () => {
