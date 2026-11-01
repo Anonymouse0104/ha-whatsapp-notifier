@@ -141,6 +141,16 @@ WhatsApp-opmaak werkt in de tekst: `*vet*`, `_cursief_`, `~doorgehaald~`.
 
 Schrijft iemand in een chat die je hebt toegevoegd, dan wordt de sensor **Laatste bericht** van die chat bijgewerkt en komt het event `whatsapp_notifier_message_received` met dezelfde velden als de sensorattributen.
 
+**Een afbeelding versturen:** geef `whatsapp_notifier.send_message` een `image` (pad naar een PNG of JPEG, max. 5 MB). Het `message` wordt het onderschrift. Het bestand moet in een map staan die Home Assistant toestaat, zoals `/config/www` (of een map uit `allowlist_external_dirs`). Dit vereist bridge-add-on 0.3.0 of nieuwer.
+
+```yaml
+action: whatsapp_notifier.send_message
+data:
+  chat_id: "120363012345678901@g.us"
+  message: "Weekgrafiek"
+  image: /config/www/chart.png
+```
+
 **Antwoord op één specifiek bericht:** in WhatsApp kunnen mensen een bericht wegvegen en daarop antwoorden. Dan is `quoted_message_id` het id van het beantwoorde bericht, `quoted_text` de tekst ervan, en `quoted_from_me` is `true` als het een bericht van de bridge was. Vink bij een chat *Alleen antwoorden op berichten van deze bridge* aan en de sensor negeert al het andere. Om een antwoord aan één exact bericht te koppelen, vergelijk je `quoted_message_id` met de `message_id` die `whatsapp_notifier.send_message` teruggeeft.
 
 Voorbeeld: vraag iets en wacht maximaal 10 minuten op "ja" als antwoord *op dat bericht*:
