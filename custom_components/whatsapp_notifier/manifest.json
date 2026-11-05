@@ -1,11 +1,11 @@
 {
   "domain": "whatsapp_notifier",
   "name": "WhatsApp Notifier",
-  "codeowners": ["@Anonymouse0104"],
+  "codeowners": ["@anonymouse-labs"],
   "config_flow": true,
-  "documentation": "https://github.com/Anonymouse0104/ha-whatsapp-notifier",
+  "documentation": "https://github.com/anonymouse-labs/ha-whatsapp-notifier",
   "iot_class": "local_push",
-  "issue_tracker": "https://github.com/Anonymouse0104/ha-whatsapp-notifier/issues",
+  "issue_tracker": "https://github.com/anonymouse-labs/ha-whatsapp-notifier/issues",
   "requirements": [],
   "version": "0.3.0"
 }

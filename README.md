@@ -4,7 +4,7 @@
 
 # WhatsApp Notifier
 
-[![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Anonymouse0104&repository=ha-whatsapp-notifier&category=integration) [![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/anonymouse0501)
+[![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=anonymouse-labs&repository=ha-whatsapp-notifier&category=integration) [![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/anonymouse0501)
 
 [Nederlands](#nederlands) | [English](#english)
 
@@ -48,9 +48,9 @@ De eerste twee vragen om een antwoord. Een antwoord op het bericht kan de herinn
 
 1. Klik op deze knop om de repository aan je Home Assistant toe te voegen en installeer daarna **WhatsApp Bridge**:
 
-   [![Open je Home Assistant en toon de dialoog om een app-repository toe te voegen.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FAnonymouse0104%2Fha-whatsapp-notifier)
+   [![Open je Home Assistant en toon de dialoog om een app-repository toe te voegen.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fanonymouse-labs%2Fha-whatsapp-notifier)
 
-   Of voeg hem handmatig toe: HA > Instellingen > Apps, open de store, dan ⋮ > Repositories, en voeg `https://github.com/Anonymouse0104/ha-whatsapp-notifier` toe. (Vóór Home Assistant 2026.2 heette dit Instellingen > Add-ons.)
+   Of voeg hem handmatig toe: HA > Instellingen > Apps, open de store, dan ⋮ > Repositories, en voeg `https://github.com/anonymouse-labs/ha-whatsapp-notifier` toe. (Vóór Home Assistant 2026.2 heette dit Instellingen > Add-ons.)
 2. Stel op het tabblad *Configuratie* in:
    - `api_token` (**verplicht**): verzin een lang wachtwoord. De bridge start niet zonder. Je hebt het hieronder opnieuw nodig.
    - `pairing_phone`: laat **leeg** om met een QR-code te koppelen (aanbevolen, zie hieronder).
@@ -271,9 +271,9 @@ Koppelen, versturen naar een groep en de sensor *Laatste bericht* werken aantoon
 
 Andere integraties van dezelfde auteur die hun berichten via deze versturen:
 
-- [Workout Buddy](https://github.com/Anonymouse0104/ha-workout-buddy): workout-samenvattingen en dagoverzichten met een grafiek, naar een persoon of groep.
-- [Brandweerrooster](https://github.com/Anonymouse0104/ha-brandweerrooster): uitrukmeldingen en statistieken van de brandweer.
-- [RWM Afvalkalender](https://github.com/Anonymouse0104/ha-rwm-afval): herinneringen voor afvalophaling (Echt-Susteren, Nederlands).
+- [Workout Buddy](https://github.com/anonymouse-labs/ha-workout-buddy): workout-samenvattingen en dagoverzichten met een grafiek, naar een persoon of groep.
+- [Brandweerrooster](https://github.com/anonymouse-labs/ha-brandweerrooster): uitrukmeldingen en statistieken van de brandweer.
+- [RWM Afvalkalender](https://github.com/anonymouse-labs/ha-rwm-afval): herinneringen voor afvalophaling (Echt-Susteren, Nederlands).
 
 ### Steun
 
@@ -319,9 +319,9 @@ The first two ask for a reply. A reply to the message can stop the reminder, see
 
 1. Click this button to add the repository to your Home Assistant, then install **WhatsApp Bridge**:
 
-   [![Open your Home Assistant instance and show the add app repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FAnonymouse0104%2Fha-whatsapp-notifier)
+   [![Open your Home Assistant instance and show the add app repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fanonymouse-labs%2Fha-whatsapp-notifier)
 
-   Or add it by hand: HA > Settings > Apps, open the store, then ⋮ > Repositories, and add `https://github.com/Anonymouse0104/ha-whatsapp-notifier`. (Before Home Assistant 2026.2 this was Settings > Add-ons.)
+   Or add it by hand: HA > Settings > Apps, open the store, then ⋮ > Repositories, and add `https://github.com/anonymouse-labs/ha-whatsapp-notifier`. (Before Home Assistant 2026.2 this was Settings > Add-ons.)
 2. On the *Configuration* tab set:
    - `api_token` (**required**): make up a long password. The bridge refuses to start without one. You need it again below.
    - `pairing_phone`: leave **empty** to link with a QR code (recommended, see below).
@@ -542,9 +542,9 @@ Linking, sending to a group and the *Last message* sensor are confirmed to work.
 
 Other integrations by the same author that send their messages through this one:
 
-- [Workout Buddy](https://github.com/Anonymouse0104/ha-workout-buddy): workout summaries and daily overviews with a chart image, to a person or group.
-- [Brandweerrooster](https://github.com/Anonymouse0104/ha-brandweerrooster): fire service turnout alerts and statistics.
-- [RWM Afvalkalender](https://github.com/Anonymouse0104/ha-rwm-afval): waste collection reminders (Echt-Susteren, Dutch).
+- [Workout Buddy](https://github.com/anonymouse-labs/ha-workout-buddy): workout summaries and daily overviews with a chart image, to a person or group.
+- [Brandweerrooster](https://github.com/anonymouse-labs/ha-brandweerrooster): fire service turnout alerts and statistics.
+- [RWM Afvalkalender](https://github.com/anonymouse-labs/ha-rwm-afval): waste collection reminders (Echt-Susteren, Dutch).
 
 ### Support
 
